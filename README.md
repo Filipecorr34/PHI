@@ -1,1 +1,1 @@
-## Projetos de Hardware e Interfaceamento
+## Projeto de Hardware e Interfaceamento
