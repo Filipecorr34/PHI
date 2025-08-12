@@ -3,17 +3,18 @@ USE ieee.std_logic_1164.all;
 
 ENTITY bloco_controle IS
     PORT (
-        clk                : IN  STD_LOGIC;
-        rst                : IN  STD_LOGIC;
-        m                  : IN  STD_LOGIC;
-        b1, b2             : IN  STD_LOGIC;
-        credito_suficiente : IN  STD_LOGIC;
-        f1, f2             : OUT STD_LOGIC;
-        nt                 : OUT STD_LOGIC;
-        credito_clr        : OUT STD_LOGIC;
-        credito_load       : OUT STD_LOGIC;
-        troco_load         : OUT STD_LOGIC;
-        sel_custo          : OUT STD_LOGIC
+        clk                 : IN  STD_LOGIC;
+        rst                 : IN  STD_LOGIC;
+        m                   : IN  STD_LOGIC;
+        b1, b2              : IN  STD_LOGIC;
+        credito_suficiente  : IN  STD_LOGIC;
+        troco_necessario    : IN  STD_LOGIC;
+        f1, f2              : OUT STD_LOGIC;
+        nt                  : OUT STD_LOGIC;
+        credito_clr         : OUT STD_LOGIC;
+        credito_load        : OUT STD_LOGIC;
+        troco_load          : OUT STD_LOGIC;
+        sel_custo           : OUT STD_LOGIC
     );
 END ENTITY bloco_controle;
 
@@ -22,7 +23,7 @@ ARCHITECTURE fsm OF bloco_controle IS
     SIGNAL estado_atual, proximo_estado : T_ESTADO;
     SIGNAL sel_custo_reg : STD_LOGIC;
 BEGIN
-    -- Processo de transição de estados (sequencial)
+    -- Processo sequencial
     PROCESS (clk, rst)
     BEGIN
         IF (rst = '1') THEN
@@ -30,10 +31,7 @@ BEGIN
             sel_custo_reg <= '0';
         ELSIF (rising_edge(clk)) THEN
             estado_atual <= proximo_estado;
-            -- Registrar a escolha do produto quando um botão é pressionado no estado inicial
             IF (estado_atual = E_INICIAL AND (b1 = '1' OR b2 = '1')) THEN
-                -- --- ALTERAÇÃO 1 (Correção da Sintaxe) ---
-                -- Substituído o "WHEN/ELSE" por um "IF/THEN/ELSE" sequencial
                 IF b1 = '1' THEN
                     sel_custo_reg <= '0';
                 ELSE
@@ -43,24 +41,20 @@ BEGIN
         END IF;
     END PROCESS;
 
-    -- Processo de lógica de próximo estado e saídas (combinacional)
-    PROCESS (estado_atual, m, b1, b2, credito_suficiente)
+    -- Processo combinacional (lógica de próximo estado e saídas)
+    PROCESS (estado_atual, m, b1, b2, credito_suficiente, troco_necessario)
     BEGIN
-        -- Valores padrão para as saídas
+        -- Valores padrão
         proximo_estado <= estado_atual;
         f1 <= '0'; f2 <= '0'; nt <= '0';
         credito_clr <= '0'; credito_load <= '0'; troco_load <= '0';
-        sel_custo <= sel_custo_reg; -- A saída de controle usa o valor já registrado
+        sel_custo <= sel_custo_reg;
 
         CASE estado_atual IS
             WHEN E_INICIAL =>
                 IF (m = '1') THEN
                     proximo_estado <= E_SOMA;
                 ELSIF (b1 = '1' OR b2 = '1') THEN
-                    -- --- ALTERAÇÃO 2 (Correção da Lógica) ---
-                    -- A atribuição de 'sel_custo' foi removida daqui.
-                    -- A decisão já foi registrada no processo sequencial,
-                    -- tornando a lógica mais confiável.
                     proximo_estado <= E_VERIFICA;
                 END IF;
 
@@ -77,13 +71,18 @@ BEGIN
 
             WHEN E_ENTREGA =>
                 credito_clr <= '1';
-                troco_load <= '1';
+                troco_load  <= '1';
                 IF (sel_custo_reg = '0') THEN
                     f1 <= '1';
                 ELSE
                     f2 <= '1';
                 END IF;
-                proximo_estado <= E_TROCO;
+                
+                IF (troco_necessario = '1') THEN
+                    proximo_estado <= E_TROCO;
+                ELSE
+                    proximo_estado <= E_INICIAL;
+                END IF;
 
             WHEN E_TROCO =>
                 nt <= '1';
