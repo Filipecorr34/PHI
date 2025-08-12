@@ -28,7 +28,9 @@ ARCHITECTURE structural OF maquina_vendas IS
             v               : IN  STD_LOGIC_VECTOR(7 DOWNTO 0);
             r1, r2          : IN  STD_LOGIC_VECTOR(7 DOWNTO 0);
             vt              : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            credito_suficiente : OUT STD_LOGIC
+            credito_suficiente : OUT STD_LOGIC;
+				troco_necessario   : OUT STD_LOGIC 
+
         );
     END COMPONENT;
 
@@ -39,6 +41,7 @@ ARCHITECTURE structural OF maquina_vendas IS
             m               : IN  STD_LOGIC;
             b1, b2          : IN  STD_LOGIC;
             credito_suficiente : IN  STD_LOGIC;
+				troco_necessario   : IN  STD_LOGIC;
             f1, f2          : OUT STD_LOGIC;
             nt              : OUT STD_LOGIC;
             credito_clr     : OUT STD_LOGIC;
@@ -50,6 +53,7 @@ ARCHITECTURE structural OF maquina_vendas IS
 
     -- Sinais de interconexão BO <-> BC
     SIGNAL s_credito_suficiente : STD_LOGIC;
+	 SIGNAL s_troco_necessario   : STD_LOGIC;
     SIGNAL s_credito_clr        : STD_LOGIC;
     SIGNAL s_credito_load       : STD_LOGIC;
     SIGNAL s_troco_load         : STD_LOGIC;
@@ -69,7 +73,8 @@ BEGIN
             r1              => r1,
             r2              => r2,
             vt              => vt,
-            credito_suficiente => s_credito_suficiente
+            credito_suficiente => s_credito_suficiente,
+				troco_necessario   => s_troco_necessario
         );
 
     -- Instanciação do Bloco de Controle
@@ -81,6 +86,7 @@ BEGIN
             b1              => b1,
             b2              => b2,
             credito_suficiente => s_credito_suficiente,
+				troco_necessario   => s_troco_necessario,
             f1              => f1,
             f2              => f2,
             nt              => nt,
