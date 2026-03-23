@@ -46,3 +46,13 @@ Estudo e implementação de circuitos de conversão de dados em nível de portas
 * **Conversor DA (Divisor Kelvin):** Utiliza um decodificador para acionar chaves analógicas em uma rede de resistores, reconstruindo o sinal analógico.
 * **Sistema Integrado:** Simulação do ciclo completo (Analógico → Digital → Analógico), demonstrando visualmente o efeito da quantização e a precisão da reconstrução com 3 bits de resolução.
 ---
+## 🚀 Como Simular
+1. Para projetos **VHDL**: Utilize o Quartus Prime para síntese e o ModelSim para análise das formas de onda (`.vhd`).
+2. Para projetos **Analógicos**: Abra os arquivos de esquemático (`.tsc`) no software Tina-TI e execute a "Análise Transiente".
+---
+## 📈 Resultados e Simulações
+* **Simulações Digitais:** Verificação de overflow em somas e geração de resultados negativos em complemento a dois no somador de 4 bits.
+* **Simulações Analógicas:** Análise de transiente e diagramas de Bode confirmando a seletividade do filtro de 5 kHz e a precisão do deslocamento de nível para o ADC.
+* **Integração AD/DA:** Reconstrução da onda senoidal original em formato de "escada" (quantizada), validando a precisão do sistema integrado.
+---
+© 2025 - Engenharia da Computação - Disciplina de PHI - UFPA.
